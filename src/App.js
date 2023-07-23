@@ -6,14 +6,14 @@ function repositoryLink(url) {
   return <a href={url}>{url.replace('https://github.com/', '')}</a>;
 }
 
-function PackageReport({report}) {
+function ModuleReport({report}) {
   return (
       <Card className="mb-3">
-        <Card.Header><h3>Report for package <code>{report.id}</code></h3></Card.Header>
+        <Card.Header><h3>Report for module <code>{report.id}</code></h3></Card.Header>
         {report.delta ?
             <>
               <Card.Body>
-                <p>This package is affected by {report.delta.breakingChanges.length} breaking changes that impact {report.clientReports.filter((client) => client.brokenUses.length > 0).length} clients.</p>
+                <p>This module is affected by {report.delta.breakingChanges.length} breaking changes that impact {report.clientReports.filter((client) => client.brokenUses.length > 0).length} clients.</p>
                 <Table striped bordered hover responsive className="mb-3">
                   <thead>
                   <tr>
@@ -46,7 +46,7 @@ function PackageReport({report}) {
               </Card.Body>
             </>
         : <Card.Body>
-              <p>An error was encountered while analyzing the package: {report.error}</p>
+              <p>An error was encountered while analyzing the module: {report.error}</p>
           </Card.Body>
         }
       </Card>
@@ -232,7 +232,7 @@ function App() {
                   <Card.Header><h3>Summary</h3></Card.Header>
                   <Card.Body>
                     We analyzed <mark>{response.pr.headBranch}</mark> (commit {response.pr.headSha.substring(0, 6)}) against <mark>{response.pr.baseBranch}</mark> (commit {response.pr.baseSha.substring(0, 6)})
-                    and found {response.report.reports.filter((report) => report.delta).length} impacted packages for a total of {response.report.reports.filter((report) => report.delta).reduce((sum, report) => sum + report.delta.breakingChanges.length, 0)} breaking changes.<br/>
+                    and found {response.report.reports.filter((report) => report.delta).length} impacted modules for a total of {response.report.reports.filter((report) => report.delta).reduce((sum, report) => sum + report.delta.breakingChanges.length, 0)} breaking changes.<br/>
                      {Object.keys(clientReports).length} clients are impacted.
                   </Card.Body>
                 </Card>
@@ -241,7 +241,7 @@ function App() {
             {error && <Alert variant="danger">{error}</Alert>}
 
             {response?.report?.reports.map((report, index) => (
-                <PackageReport report={report} key={index} />
+                <ModuleReport report={report} key={index} />
             ))}
 
             {response?.report &&
