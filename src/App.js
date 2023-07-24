@@ -35,7 +35,7 @@ function ModuleReport({report}) {
                         <tr key={index}>
                           <td><a href={breakingChange.fileUrl}><code>{breakingChange.declaration}</code></a> [<a href={breakingChange.diffUrl}>diff</a>]</td>
                           <td><code>{breakingChange.change}</code></td>
-                          <td>{brokenLocations > 0 ? <span class="badge rounded-pill large-pill text-bg-danger">Breaks clients</span> : <span className="badge rounded-pill large-pill text-bg-warning">No broken client</span>}</td>
+                          <td>{brokenLocations > 0 ? <span className="badge rounded-pill large-pill text-bg-danger">Breaks clients</span> : <span className="badge rounded-pill large-pill text-bg-warning">No broken client</span>}</td>
                           <td>{affectedClients.length > 0 ? `${affectedClients.length} (${affectedClients.map(client => client.url).join(', ')})` : <span className="badge rounded-pill large-pill text-bg-success">None</span>}</td>
                           <td>{brokenLocations > 0 ? <span className="badge rounded-pill large-pill text-bg-danger">{brokenLocations}</span> : <span className="badge rounded-pill large-pill text-bg-success">None</span>}</td>
                         </tr>
@@ -56,7 +56,7 @@ function ModuleReport({report}) {
 function ClientReport({clientUrl, brokenUses}) {
   return (
       <Card className="mb-3">
-        <Card.Header><h3>Impact on client <a href={clientUrl}>{repositoryLink(clientUrl)}</a></h3></Card.Header>
+        <Card.Header><h3>Impact on client {repositoryLink(clientUrl)}</h3></Card.Header>
         <Card.Body>
           <div id={`client-report`}>
             <Table striped bordered hover responsive className="mb-3">
@@ -102,7 +102,7 @@ function ImpactSummary({ clientReports }) {
             <tbody>
             {Object.entries(clientReports).map(([clientUrl, brokenUses], index) => (
                 <tr key={index}>
-                  <td><a href={clientUrl}>{repositoryLink(clientUrl)}</a></td>
+                  <td>{repositoryLink(clientUrl)}</td>
                   <td>
                     {brokenUses.length > 0
                         ? <span className="badge rounded-pill large-pill text-bg-danger">{brokenUses.length} broken uses</span>
@@ -134,12 +134,15 @@ function App() {
       const res = await axios.post(`https://api.breakbot.net/github/pr-sync/${owner}/${name}/${number}`);
 
       if (res.status !== 200) {
-        setError(res.data.message);
+        setError(res.data?.message);
       } else {
         setResponse(res.data);
       }
     } catch (err) {
-      setError(err.message);
+      if (err.response?.data?.message)
+        setError(err.response.data.message);
+      else
+        setError(err.message);
     }
 
     setLoading(false);
